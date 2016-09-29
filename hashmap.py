@@ -6,19 +6,6 @@ class HashMap:
     __map_table = []
     __count = 0
 
-    class Entity:
-        def __init__(self, hash, key, value, next=None):
-            self.hash = hash
-            self.key = key
-            self.value = value
-            self.next = next
-
-        def __iter__(self):
-            entity = self
-            while entity is not None:
-                yield entity
-                entity = entity.next
-
     def __init__(self, size):
         """Return an instance of the class with pre-allocated space for the given number of objects.
 
@@ -31,6 +18,13 @@ class HashMap:
 
         self.CAPACITY_SIZE = size
         self.__map_table = [None for x in range(self.CAPACITY_SIZE)]  # need to check size is number
+
+        # self.empty is pre-allocated space for the given number of objects
+        self.__empty = last = self.Entity()
+
+        for x in range(self.CAPACITY_SIZE):
+            last.next = self.Entity()
+            last = last.next
 
     def __len__(self):
         return self.__count
@@ -51,8 +45,11 @@ class HashMap:
         if not isinstance(key, str):
             raise TypeError("key must be an string")
 
-        index = self.__get_index(key)                          # Get index
-        new_entity = self.Entity(key.__hash__(), key, value)   # Create new entity
+        # get bucket list index
+        index = self.__get_index(key)
+
+        # get next available empty entity from pre-allocated space
+        new_entity = self.__empty
 
         if self.__map_table[index] is None:
             self.__map_table[index] = new_entity
@@ -64,6 +61,14 @@ class HashMap:
                 elif entity.next is None:
                     entity.next = new_entity
                     break
+
+        # set hash , key , value
+        new_entity.hash = key.__hash__()
+        new_entity.key = key
+        new_entity.value = value
+
+        # set next available entity
+        self.__empty = self.__empty.next
 
         self.__count += 1
         return True
@@ -129,6 +134,19 @@ class HashMap:
         builtin_hash = key.__hash__()
         return builtin_hash & (self.CAPACITY_SIZE - 1)
 
+    class Entity:
+        def __init__(self, hash=None, key=None, value=None, next=None):
+            self.hash = hash
+            self.key = key
+            self.value = value
+            self.next = next
+
+        def __iter__(self):
+            entity = self
+            while entity is not None:
+                yield entity
+                entity = entity.next
+
 
 if __name__ == '__main__':
     map = HashMap(20)
@@ -142,3 +160,4 @@ if __name__ == '__main__':
     map.delete("k4")
     print(map.get("k4"))
     print(len(map))
+    print(map.load())
