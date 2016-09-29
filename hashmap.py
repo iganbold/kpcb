@@ -1,45 +1,91 @@
 
+
 class HashMap:
 
-    CAPACITY_SIZE = 16
+    CAPACITY_SIZE = 0
     __map_table = []
     __count = 0
 
     class Entity:
-        def __init__(self, hash, key, value, entity=None):
+        def __init__(self, hash, key, value, next=None):
             self.hash = hash
             self.key = key
             self.value = value
-            self.entity = entity
+            self.next = next
+
+        def __iter__(self):
+            entity = self
+            while entity is not None:
+                yield entity
+                entity = entity.next
 
     def __init__(self, size):
+        """Constructor method for the hashmap
+
+        :param size:  initial size for the hashmap and size must be int
+        """
+
+        # it violates duck_type principle
+        if size <= 0:
+            raise ValueError("size cannot be less then zero");
+
         self.CAPACITY_SIZE = size
-        try:
-            self.__map_table = [None for x in range(size)]
-        except TypeError as ex:
-            print('{} size must be integer'.format(size))
+        self.__map_table = [None for x in range(self.CAPACITY_SIZE)]  # need to check size is number
 
     def __len__(self):
         return self.__count
 
     def set(self, key, value):
+        """ Add key and value pair to the hashmap.
+        If the key exists in the hashmap, the old value is replaced with new value
 
-        return False
+        :param key:  key associated to specific value and key must be string type
+        :param value:  value associated to specific key
+        :return:  The return value. True for success, False otherwise
+        """
+
+        if self.__count == self.CAPACITY_SIZE:
+            return False
+
+        # it violates duck_type principle
+        if not isinstance(key, str):
+            raise TypeError("key must be an string")
+
+        index = self.__get_index(key)                          # Get index
+        new_entity = self.Entity(key.__hash__(), key, value)   # Create new entity
+
+        if self.__map_table[index] is None:
+            self.__map_table[index] = new_entity
+        else:
+            for entity in self.__map_table[index]:
+                if entity.hash == key.__hash__() and entity.key == key:
+                    entity.value = value
+                    return True
+                elif entity.next is None:
+                    entity.next = new_entity
+                    break
+
+        self.__count += 1
+        return True
 
     def get(self, key):
-
-        return
+        builtin_hash = key.__hash__()
+        index = builtin_hash & (self.CAPACITY_SIZE - 1)
+        return self.__map_table[index].value
 
     def delete(self, key):
         print("delete")
 
     def load(self):
-        print("load")
+        return self.__count/self.CAPACITY_SIZE
 
-class Dog:
+    def __get_index(self, key):
+        builtin_hash = key.__hash__()
+        return builtin_hash & (self.CAPACITY_SIZE - 1)
 
-    def __init__(self, name):
-        self.name = name
 
 if __name__ == '__main__':
     map = HashMap(20)
+
+
+
