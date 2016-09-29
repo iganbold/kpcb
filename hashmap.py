@@ -19,9 +19,10 @@ class HashMap:
         self.CAPACITY_SIZE = size
         self.__map_table = [None for x in range(self.CAPACITY_SIZE)]  # need to check size is number
 
-        # self.empty is pre-allocated space for the given number of objects
+        # self.__empty is pre-allocated space for the given number of objects
         self.__empty = last = self.Entity()
 
+        # create empty entities
         for x in range(self.CAPACITY_SIZE):
             last.next = self.Entity()
             last = last.next
