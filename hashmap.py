@@ -69,9 +69,26 @@ class HashMap:
         return True
 
     def get(self, key):
-        builtin_hash = key.__hash__()
-        index = builtin_hash & (self.CAPACITY_SIZE - 1)
-        return self.__map_table[index].value
+        """Returns the specific value associated to given key
+
+        :param key:  key associated to specific value
+        :return:  The return value. Associated value for success, None otherwise
+        """
+
+        # it violates duck_type principle
+        if not isinstance(key, str):
+            raise TypeError("key must be an string")
+
+        index = self.__get_index(key)
+
+        if self.__map_table[index] is None:
+            return None
+
+        for entity in self.__map_table[index]:
+            if entity.hash == key.__hash__() and entity.key == key:
+                return entity.value
+
+        return None
 
     def delete(self, key):
         print("delete")
@@ -87,5 +104,9 @@ class HashMap:
 if __name__ == '__main__':
     map = HashMap(20)
 
+    map.set("k1", "v1")
+    map.set("k2", "v2")
+    map.set("k3", "v3")
+    map.set("k4", "v4")
 
-
+    print(map.get("k4"))
