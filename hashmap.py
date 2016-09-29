@@ -36,12 +36,12 @@ class HashMap:
         return self.__count
 
     def set(self, key, value):
-        """ Add key and value pair to the hashmap.
-        If the key exists in the hashmap, the old value is replaced with new value
+        """Stores the given key/value pair in the hash map.
+        If the key exists in the hashmap, the old value is replaced with new value.
 
         :param key:  key associated to specific value and key must be string type
         :param value:  value associated to specific key
-        :return:  The return value. True for success, False otherwise
+        :return:  returns a boolean value indicating success / failure of the operation.
         """
 
         if self.__count == self.CAPACITY_SIZE:
@@ -69,10 +69,10 @@ class HashMap:
         return True
 
     def get(self, key):
-        """Returns the specific value associated to given key
+        """Return the value associated with the given key, or null if no value is set.
 
         :param key:  key associated to specific value
-        :return:  The return value. Associated value for success, None otherwise
+        :return:  returns the associated value indicating success, None otherwise
         """
 
         # it violates duck_type principle
@@ -91,7 +91,31 @@ class HashMap:
         return None
 
     def delete(self, key):
-        print("delete")
+        """Delete the value associated with the given key
+
+        :param key:  key associated to specific value
+        :return:  returns the value on success or None if the key has no value.
+        """
+
+        # it violates duck_type principle
+        if not isinstance(key, str):
+            raise TypeError("key must be an string")
+
+        index = self.__get_index(key)
+
+        if self.__map_table[index] is None:
+            return None
+
+        for entity in self.__map_table[index]:
+            if entity.hash == key.__hash__() and entity.key == key:
+                if entity.value is not None:
+                    result = entity.value
+                    entity.value = None
+                    return result
+                else:
+                    return None
+
+        return None
 
     def load(self):
         return self.__count/self.CAPACITY_SIZE
@@ -110,3 +134,6 @@ if __name__ == '__main__':
     map.set("k4", "v4")
 
     print(map.get("k4"))
+    map.delete("k4")
+    print(map.get("k4"))
+    print(len(map))
