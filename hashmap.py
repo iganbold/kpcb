@@ -20,7 +20,7 @@ class HashMap:
                 entity = entity.next
 
     def __init__(self, size):
-        """Constructor method for the hashmap
+        """Return an instance of the class with pre-allocated space for the given number of objects.
 
         :param size:  initial size for the hashmap and size must be int
         """
@@ -118,6 +118,11 @@ class HashMap:
         return None
 
     def load(self):
+        """Return a float value representing the load factor (`(items in hash map)/(size of hash map)`) of the data structure
+
+        :return: returns a float value representing the load factor of the hashmap
+        """
+
         return self.__count/self.CAPACITY_SIZE
 
     def __get_index(self, key):
