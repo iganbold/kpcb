@@ -1,8 +1,17 @@
+#!/usr/bin/env python3
+"""This is hashmap module
 
+    Usage:
+        import hashmap
+
+"""
 
 class HashMap:
     """This class is implementation of basic HashMap. It uses only primitive types to implement a fixed-size hash map
     that associates string keys with arbitrary data object references.
+
+    Usage:
+        from hashmap import HashMap
 
     """
 
@@ -205,17 +214,3 @@ class HashMap:
 
 if __name__ == '__main__':
     map = HashMap(20)
-
-    map.set("k1", "v1")
-    map.set("k2", "v2")
-    map.set("k3", "v3")
-    map.set("k4", "v4")
-
-    print(len(map))
-    map.delete("k3")
-
-    print(len(map))
-
-    print(map.get("k3"))
-
-    print(HashMap.__doc__)
