@@ -26,11 +26,11 @@ class HashMap:
 
         # it violates duck_type principle
         if size <= 0:
-            raise ValueError("size cannot be less then zero");
+            raise ValueError("size cannot be less then zero")
 
         # Size of hash map
         self.capacity = size
-        self.__bucket_list = [None for x in range(self.capacity)]  #TODO need to check size is number
+        self.__bucket_list = [None for x in range(self.capacity)]
 
         # self.__empty is pre-allocated space for the given number of objects
         self.__empty = last = self.Entry()

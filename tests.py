@@ -7,6 +7,14 @@ class TestHashMap(unittest.TestCase):
     def setUp(self):
         self.map = HashMap(10)
 
+    def test_init_with_less_then_zero_length_raises_ValueError(self):
+        with self.assertRaises(ValueError):
+            self.map = HashMap(0)
+
+    def test_init_with_not_int_value_raises_TypeError(self):
+        with self.assertRaises(TypeError):
+            self.map = HashMap("Hello")
+
     def test_set_entry_to_hashmap(self):
         result = self.map.set("hello", "world")
         self.assertTrue(True, result)
@@ -28,10 +36,10 @@ class TestHashMap(unittest.TestCase):
         self.assertEqual(False, self.map.set("k11", "val11"))
 
     def test_set_with_10000_entries_and_get_1000th(self):
-        mymap = HashMap(10000)
+        self.map = HashMap(10000)
         for x in range(10000):
-            mymap.set("k"+str(x), "val"+str(x))
-        self.assertEqual('val1000', mymap.get("k1000"))
+            self.map.set("k"+str(x), "val"+str(x))
+        self.assertEqual('val1000', self.map.get("k1000"))
 
     def test_get_lookup_entry_by_key(self):
         self.map.set("k1", "val1")
