@@ -1,10 +1,13 @@
 
 
 class HashMap:
+    """This class is implementation of basic HashMap. It uses only primitive types to implement a fixed-size hash map
+    that associates string keys with arbitrary data object references.
 
-    CAPACITY_SIZE = 0
-    __map_table = []
-    __count = 0
+    """
+
+    __bucket_list = []      # Bucket List
+    __count = 0             # Items in hash map
 
     def __init__(self, size):
         """Return an instance of the class with pre-allocated space for the given number of objects.
@@ -16,15 +19,16 @@ class HashMap:
         if size <= 0:
             raise ValueError("size cannot be less then zero");
 
-        self.CAPACITY_SIZE = size
-        self.__map_table = [None for x in range(self.CAPACITY_SIZE)]  # need to check size is number
+        # Size of hash map
+        self.capacity = size
+        self.__bucket_list = [None for x in range(self.capacity)]  #TODO need to check size is number
 
         # self.__empty is pre-allocated space for the given number of objects
-        self.__empty = last = self.Entity()
+        self.__empty = last = self.Entry()
 
         # create empty entities
-        for x in range(self.CAPACITY_SIZE):
-            last.next = self.Entity()
+        for x in range(self.capacity - 1):
+            last.next = self.Entry()
             last = last.next
 
     def __len__(self):
@@ -39,37 +43,38 @@ class HashMap:
         :return:  returns a boolean value indicating success / failure of the operation.
         """
 
-        if self.__count == self.CAPACITY_SIZE:
+        if self.__count == self.capacity:
             return False
 
-        # it violates duck_type principle
-        if not isinstance(key, str):
-            raise TypeError("key must be an string")
+        self.__check_key(key)
 
         # get bucket list index
         index = self.__get_index(key)
 
-        # get next available empty entity from pre-allocated space
+        # get available empty entry from pre-allocated space
         new_entity = self.__empty
 
-        if self.__map_table[index] is None:
-            self.__map_table[index] = new_entity
+        if self.__bucket_list[index] is None:
+            self.__bucket_list[index] = new_entity
         else:
-            for entity in self.__map_table[index]:
-                if entity.hash == key.__hash__() and entity.key == key:
-                    entity.value = value
+            for entry in self.__bucket_list[index]:
+                if entry.hash == key.__hash__() and entry.key == key:
+                    # update old value with new value
+                    entry.value = value
                     return True
-                elif entity.next is None:
-                    entity.next = new_entity
+                elif entry.next is None:
+                    # if collision happens it add new_entity to the linked list
+                    entry.next = new_entity
                     break
+
+        # set next available entry
+        self.__empty = self.__empty.next
 
         # set hash , key , value
         new_entity.hash = key.__hash__()
         new_entity.key = key
         new_entity.value = value
-
-        # set next available entity
-        self.__empty = self.__empty.next
+        new_entity.next = None
 
         self.__count += 1
         return True
@@ -81,18 +86,17 @@ class HashMap:
         :return:  returns the associated value indicating success, None otherwise
         """
 
-        # it violates duck_type principle
-        if not isinstance(key, str):
-            raise TypeError("key must be an string")
+        self.__check_key(key)
 
+        # get bucket list index
         index = self.__get_index(key)
 
-        if self.__map_table[index] is None:
+        if self.__bucket_list[index] is None:
             return None
 
-        for entity in self.__map_table[index]:
-            if entity.hash == key.__hash__() and entity.key == key:
-                return entity.value
+        for entry in self.__bucket_list[index]:
+            if entry.hash == key.__hash__() and entry.key == key:
+                return entry.value
 
         return None
 
@@ -103,25 +107,49 @@ class HashMap:
         :return:  returns the value on success or None if the key has no value.
         """
 
-        # it violates duck_type principle
-        if not isinstance(key, str):
-            raise TypeError("key must be an string")
+        self.__check_key(key)
 
         index = self.__get_index(key)
 
-        if self.__map_table[index] is None:
+        if self.__bucket_list[index] is None:
             return None
 
-        for entity in self.__map_table[index]:
-            if entity.hash == key.__hash__() and entity.key == key:
-                if entity.value is not None:
-                    result = entity.value
-                    entity.value = None
-                    return result
-                else:
-                    return None
+        # previous entry is used for changing references
+        previous_entity = None
 
-        return None
+        # return value after delete
+        value = None
+
+        for entry in self.__bucket_list[index]:
+            if entry.hash == key.__hash__() and entry.key == key:
+
+                value = entry.value
+
+                # delete from the bucket list
+                if previous_entity is not None:
+                    previous_entity.next = entry.next
+                else:
+                    self.__bucket_list[index] = entry.next
+
+                # clear the entry's properties in order to make entry available for reuse
+                entry.hash = None
+                entry.key = None
+                entry.value = None
+
+                # put back entry to __empty list for reuse
+                if self.__empty is None:
+                    entry.next = None
+                    self.__empty = entry
+                else:
+                    # swap empty reference
+                    entry.next = self.__empty
+                    self.__empty = entry
+
+                break
+            previous = entry
+
+        self.__count -= 1
+        return value
 
     def load(self):
         """Return a float value representing the load factor (`(items in hash map)/(size of hash map)`) of the data structure
@@ -129,24 +157,50 @@ class HashMap:
         :return: returns a float value representing the load factor of the hashmap
         """
 
-        return self.__count/self.CAPACITY_SIZE
+        return self.__count/self.capacity
 
     def __get_index(self, key):
-        builtin_hash = key.__hash__()
-        return builtin_hash & (self.CAPACITY_SIZE - 1)
+        """Generate the bucket list index
 
-    class Entity:
+        :param key: key associated to specific value
+        :return: bucket list index
+        """
+
+        return key.__hash__() & (self.capacity - 1)
+
+    def __check_key(self, key):
+
+        # it violates duck_type principle
+        if not isinstance(key, str):
+            raise TypeError("key must be an string")
+
+
+    class Entry:
+
         def __init__(self, hash=None, key=None, value=None, next=None):
+            """Return an instance of the Entry
+
+            :param hash:  hashcode
+            :param key:  key associated to specific value
+            :param value:  value associated to specific key
+            :param next:  reference to next entry which is used for collision
+            """
+
             self.hash = hash
             self.key = key
             self.value = value
             self.next = next
 
         def __iter__(self):
-            entity = self
-            while entity is not None:
-                yield entity
-                entity = entity.next
+            """Make Entry iterable
+
+            :return: returns entry for each iteration
+            """
+
+            entry = self
+            while entry is not None:
+                yield entry
+                entry = entry.next
 
 
 if __name__ == '__main__':
@@ -157,8 +211,11 @@ if __name__ == '__main__':
     map.set("k3", "v3")
     map.set("k4", "v4")
 
-    print(map.get("k4"))
-    map.delete("k4")
-    print(map.get("k4"))
     print(len(map))
-    print(map.load())
+    map.delete("k3")
+
+    print(len(map))
+
+    print(map.get("k3"))
+
+    print(HashMap.__doc__)
