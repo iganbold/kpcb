@@ -213,4 +213,4 @@ class HashMap:
 
 
 if __name__ == '__main__':
-    map = HashMap(20)
+    pass
