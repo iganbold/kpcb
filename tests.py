@@ -7,7 +7,7 @@ class TestHashMap(unittest.TestCase):
     def setUp(self):
         self.map = HashMap(10)
 
-    def test_init_with_less_then_zero_length_raises_ValueError(self):
+    def test_init_with_less_then_one_length_raises_ValueError(self):
         with self.assertRaises(ValueError):
             self.map = HashMap(0)
 
