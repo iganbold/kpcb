@@ -5,4 +5,4 @@ python:
     - 3.5
 
 script:
-     - if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then python -m unittest discover; fi
+     - python -m unittest
