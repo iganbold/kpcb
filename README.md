@@ -1,7 +1,15 @@
 # Kleiner Perkins Caufield & Byers (KPCB)
 
-## Usage
+## Usage Example 
+```python
 from hashmap import HashMap
+
+map = HashMap(10)
+map.set("k1", "val1")
+map.set("k2", "val2")
+map.set("k3", "val3")
+print(map.get("k2"))
+```
 
 
 ## Run tests with unittest
