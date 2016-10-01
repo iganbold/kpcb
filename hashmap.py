@@ -19,7 +19,7 @@ class HashMap:
     __count = 0             # Items in hash map
 
     def __init__(self, size):
-        """Return an instance of the class with pre-allocated space for the given number of objects.
+        """Return an instance of the class with PRE-ALLOCATED space for the given number of objects.
 
         :param size:  initial size for the hashmap and size must be int
         """
