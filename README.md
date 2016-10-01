@@ -3,13 +3,8 @@
 ## Usage
 from hashmap import HashMap
 
-### Example
-map = HashMap(300)
-map.set("k1","v1")
-map.set("k2","v2")
-map.set("k3","v3")
-
-
+### Run tests with unittest
+python -m unittest
 
 ## Problem
 Using only primitive types, implement a fixed-size hash map that associates string keys with arbitrary data object references (you don't need to copy the object). Your data structure should be optimized for algorithmic runtime and memory usage. You should not import any external libraries, and may not use primitive hash map or dictionary types in languages like Python or Ruby.
